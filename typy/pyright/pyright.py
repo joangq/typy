@@ -73,9 +73,6 @@ def execute(
         if bool(v)
     }
 
-    for k, v in args.items():
-        print(k,v)
-
     result = pyright.run(
         path, 
         *args.values(), 
