@@ -1,6 +1,6 @@
-from pyright_pytest.pyright import run
+from typy import pyright
+import rich
 
-run(
-    '.',
-    dependencies=True,
-)
+result: pyright.Analysis = pyright.run("test/sample_file.py")
+
+rich.print(result)
