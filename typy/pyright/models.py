@@ -23,7 +23,7 @@ class GeneralDiagnostic(BaseModel):
     severity: str
     message: str
     range: Range
-    rule: str
+    rule: None | str = None
 
 class Version(BaseModel):
     major: int
