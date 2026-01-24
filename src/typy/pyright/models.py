@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
-import pathlib
-from typing import Annotated
 from pydantic import BaseModel, BeforeValidator
+from datetime import datetime, timedelta
+from typing import Annotated
+import pathlib
 
 class Summary(BaseModel):
     filesAnalyzed: int
