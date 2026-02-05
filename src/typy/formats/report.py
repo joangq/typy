@@ -17,9 +17,10 @@ class ReportBase[T: issue.GitlabIssue](BaseModel):
     emitter: Emitter
 
     def show(
-            report, 
+            self, 
             rich_colors: bool = True, 
-            console: None|Console = None
+            console: None|Console = None,
+            code_theme: str = 'one-dark'
     ):
         console = console or Console(no_color=not rich_colors)
 
@@ -38,17 +39,18 @@ class ReportBase[T: issue.GitlabIssue](BaseModel):
 
             return result
 
-        for i,issue in enumerate(report.issues):
-            is_last_issue = i == len(report.issues)-1
+        for i,issue in enumerate(self.issues):
+            is_last_issue = i == len(self.issues)-1
 
             srclines = get_file_lines(issue.location.path)
 
             issue.show(
                 srclines=srclines,
-                console=console
+                console=console,
+                code_theme=code_theme
             )
 
-            issue_description = f'{report.emitter.name}\\[{issue.check_name}]: {issue.description}'
+            issue_description = f'{self.emitter.name}\\[{issue.check_name}]: {issue.description}'
             issue_description = f'[red]{issue_description}[/red]'
 
             console.print(issue_description)

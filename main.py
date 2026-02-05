@@ -16,15 +16,6 @@ def report(engine: Engine):
 
     result.show()
 
-    # rich.print(result.emitter)
-    # for issue in result.issues:
-    #     rich.print(issue.check_name)
-    #     rich.print(issue.description)
-    #     rich.print()
-# 
-    # rich.print(result.elapsed.microseconds / 1000, 'ms') # type: ignore
-    # rich.print()
-
 report('ty')
 report('pyright')
 report('pyrefly')

@@ -76,6 +76,7 @@ class GitlabIssue(BaseModel):
         highlight_char: str = '^', # '~'
         rich_colors: bool = True,
         console: None|Console = None,
+        code_theme: str = 'one-dark',
     ):
         console = console or Console(no_color=not rich_colors)
         #for i,issue in enumerate(report.issues):
@@ -125,7 +126,7 @@ class GitlabIssue(BaseModel):
             line = Syntax(
                 line, 
                 'python', 
-                theme='emacs',
+                theme=code_theme,
                 background_color='default'
             )
             
