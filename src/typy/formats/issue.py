@@ -3,6 +3,9 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import ClassVar, Literal
 
+from rich.syntax import Syntax
+from rich.console import Console
+
 class LineColumnPosition(BaseModel):
     line: int = Field(..., ge=1)
     column: int = Field(..., ge=1)
@@ -66,6 +69,84 @@ class GitlabIssue(BaseModel):
     location: Location
     severity: None | Severity = None
     fingerprint: None | str = None
+
+    def show(
+        self,
+        srclines: list[str],
+        highlight_char: str = '^', # '~'
+        rich_colors: bool = True,
+        console: None|Console = None,
+    ):
+        console = console or Console(no_color=not rich_colors)
+        #for i,issue in enumerate(report.issues):
+        #    is_last_issue = i == len(report.issues)-1
+
+        location = self.location
+
+        if not location.positions:
+            return
+
+        if not (
+            isinstance(location.positions.begin, LineColumnPosition)
+            and isinstance(location.positions.end, LineColumnPosition)
+        ):
+            return
+        
+        begin_line: int = location.positions.begin.line-1
+        end_line: int = location.positions.end.line
+        lines = srclines[begin_line-1:end_line+1]
+        lines = [*filter(bool, lines)]
+        begin_col: int = location.positions.begin.column-1
+        end_col: int = location.positions.end.column
+        
+        highlight = highlight_char*abs(begin_col-end_col)
+
+        #print(begin_line, end_line)
+        
+        if (sep := lines[-1].strip()):
+            highlight = (
+                lines[-1].rsplit(sep, 1)[0]
+                + highlight
+            )
+
+        location_str = f'>>> {location.path}:{begin_line+1}:{end_line+1}'
+        
+        original_width = console.width
+
+        location_str = f'[blue]{location_str}[/blue]'
+        console.print(location_str)
+
+        for j, line in enumerate(lines):
+            is_last = j == len(lines)-1
+            
+            highlight = f'[bold][red]{highlight}[/bold][/red]'
+            block = f'[black]| [/black]'
+            n = len(line)
+            line = Syntax(
+                line, 
+                'python', 
+                theme='emacs',
+                background_color='default'
+            )
+            
+            console.print(block, end=' ')
+            console.width = n
+            console.print(line, end='')
+            console.width = original_width
+
+            if is_last:
+                console.print(block, end=' ')
+                console.print(highlight)
+
+        console.width = original_width
+
+        # issue_description = f'{report.emitter.name}\\[{issue.check_name}]: {issue.description}'
+        # issue_description = f'[red]{issue_description}[/red]'
+        
+        # console.print(issue_description)
+        
+        # if not is_last_issue:
+        #     console.print()
 
 class BaseIssue(GitlabIssue):
     categories: list[Category]

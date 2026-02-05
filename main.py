@@ -14,14 +14,16 @@ def report(engine: Engine):
                   engine.report(files=[SAMPLE_FILE]) # type: ignore
     )
 
-    rich.print(result.emitter)
-    for issue in result.issues:
-        rich.print(issue.check_name)
-        rich.print(issue.description)
-        rich.print()
+    result.show()
 
-    rich.print(result.elapsed.microseconds / 1000, 'ms') # type: ignore
-    rich.print()
+    # rich.print(result.emitter)
+    # for issue in result.issues:
+    #     rich.print(issue.check_name)
+    #     rich.print(issue.description)
+    #     rich.print()
+# 
+    # rich.print(result.elapsed.microseconds / 1000, 'ms') # type: ignore
+    # rich.print()
 
 report('ty')
 report('pyright')
