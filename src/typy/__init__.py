@@ -1,2 +1,6 @@
-def main() -> None:
-    print("Hello from typy!")
+from . import (
+    mypy,
+    pyright,
+    pyrefly,
+    ty
+)
