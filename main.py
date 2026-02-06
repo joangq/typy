@@ -1,19 +1,13 @@
 from typing import Literal, cast
-from typy import ty, pyright, pyrefly, mypy
-import typy
+import typy.engine
 import typy.formats.gitlab
 import rich
 
 SAMPLE_FILE = 'test/files/sample_file.py'
 
-type Engine = Literal['ty', 'pyright', 'pyrefly', 'mypy']
-
-def report(engine: Engine):
-    engine = getattr(typy, engine)
-    result = cast(typy.formats.gitlab.Report,
-                  engine.report(files=[SAMPLE_FILE]) # type: ignore
-    )
-
+def report(name: typy.Engine):
+    engine = typy.engine.get(name)
+    result = engine.report(files=[SAMPLE_FILE])
     result.show()
 
 report('ty')
