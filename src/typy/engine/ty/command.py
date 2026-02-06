@@ -4,10 +4,11 @@ import json
 from typing import Any, cast
 from argbuilder import Command, Field # pyright: ignore[reportMissingTypeStubs]
 from pathlib import Path
-from typy.engine.base import EngineModule
+from typy.engine.base import EngineModule, RevealType
 from typy.formats import gitlab, report as Report
 from typy.utils.path import resolve_paths
 from typy.utils import subprocess
+import re
 
 class Module(EngineModule):
     class ty(Command):
@@ -87,4 +88,18 @@ class Module(EngineModule):
             elapsed=timedelta(microseconds=elapsed / 1000),
             time=now,
             emitter=Report.Emitter(name='ty', version=Module.version())
+        )
+
+    REVEAL_TYPE_PATTERN = re.compile(
+        r'Revealed type: `(.*)`'
+    )
+    @staticmethod
+    def parse_reveal_type(x: str) -> None|RevealType:
+        match = Module.REVEAL_TYPE_PATTERN.search(x)
+        if not match:
+            return None
+        
+        return RevealType(
+            typ=match.group(1),
+            sym=None
         )

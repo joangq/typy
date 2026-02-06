@@ -1,9 +1,22 @@
-from typing import Literal
+from typing import Final, Literal
 
 import typy
 from typy.engine.base import EngineModule
 
 Engine = Literal['ty', 'pyright', 'pyrefly', 'mypy']
+
+from .ty import Module as ty
+from .pyright import Module as pyright
+from .pyrefly import Module as pyrefly
+from .mypy import Module as mypy
+
+available: Final[list[Engine]] = Engine.__args__
+modules: Final[list[EngineModule]] = [
+    ty,
+    pyright,
+    pyrefly,
+    mypy,
+]
 
 NoSuchEngineException = lambda name: ValueError(
 f"""

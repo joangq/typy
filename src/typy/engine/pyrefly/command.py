@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from hashlib import sha1
+import re
 import warnings
 from argbuilder import Command, Field # pyright: ignore[reportMissingTypeStubs]
 from argbuilder.builder import NOT_SET # pyright: ignore[reportMissingTypeStubs]
 from pathlib import Path
 from typing import Literal, cast
 
-from typy.engine.base import EngineModule
+from typy.engine.base import EngineModule, RevealType
 from typy.utils.types import AnyDict
 from typy.utils.path import resolve_paths, resolve_path
 from .models import Analysis
@@ -118,4 +119,19 @@ class Module(EngineModule):
             elapsed=timedelta(microseconds=elapsed / 1000),
             time=now,
             emitter=Report.Emitter(name='pyrefly', version=Module.version()),
+        )
+
+    REVEAL_TYPE_PATTERN = re.compile(
+        r'revealed type: (.*)'
+    )
+
+    @staticmethod
+    def parse_reveal_type(x: str) -> None | RevealType:
+        match = Module.REVEAL_TYPE_PATTERN.search(x)
+        if not match:
+            return None
+        
+        return RevealType(
+            typ=match.group(1),
+            sym=None
         )

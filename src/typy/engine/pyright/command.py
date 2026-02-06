@@ -1,10 +1,11 @@
 from datetime import timedelta
+import re
 from typing import Any, Concatenate, Generic, Literal, NamedTuple, ParamSpec, Callable, TypeVar, cast
 from pathlib import Path
 import warnings
 from argbuilder import Command, Field # pyright: ignore[reportMissingTypeStubs]
 import json
-from typy.engine.base import EngineModule
+from typy.engine.base import EngineModule, RevealType
 from typy.formats import gitlab, issue, report as Report
 from hashlib import sha1
 from typy.utils import fingerprint
@@ -177,4 +178,18 @@ class Module(EngineModule):
             elapsed=timedelta(microseconds=result.summary.timeInSec.microseconds),
             time=result.time,
             emitter=Report.Emitter(name='pyright', version=Module.version())
+        )
+
+    REVEAL_TYPE_PATTERN = re.compile(
+        r'Type of "(.*)" is "(.*)"'
+    )
+    @staticmethod
+    def parse_reveal_type(x: str) -> None | RevealType:
+        match = Module.REVEAL_TYPE_PATTERN.search(x)
+        if not match:
+            return None
+        
+        return RevealType(
+            typ=match.group(2),
+            sym=match.group(1)
         )

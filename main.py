@@ -5,12 +5,10 @@ import rich
 
 SAMPLE_FILE = 'test/files/sample_file.py'
 
-def report(name: typy.Engine):
-    engine = typy.engine.get(name)
+for engine in typy.engine.available:
+    engine = typy.engine.get(engine)
     result = engine.report(files=[SAMPLE_FILE])
-    result.show()
+    # result.show()
+    for issue in result.issues:
+        print(engine.parse_reveal_type(issue.description))
 
-report('ty')
-report('pyright')
-report('pyrefly')
-report('mypy')
